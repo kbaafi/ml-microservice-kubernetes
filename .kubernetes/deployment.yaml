@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boston-house-prices
+  namespace: boston-house-prices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: boston-house-prices
+  template:
+    metadata:
+      labels:
+        app: boston-house-prices
+    spec:
+      containers:
+      - name: boston-house-prices
+        image: kbaafi/boston-houseprices-inference
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      

@@ -1,42 +1,76 @@
 [![CircleCI](https://circleci.com/gh/kbaafi/ml-microservice-kubernetes.svg?style=svg)](https://circleci.com/gh/kbaafi/ml-microservice-kubernetes)
 
-## Project Overview
-
-In this project, you will apply the skills you have acquired in this course to operationalize a Machine Learning Microservice API. 
-
-You are given a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several features, such as average rooms in a home and data about highway access, teacher-to-pupil ratios, and so on. You can read more about the data, which was initially taken from Kaggle, on [the data source site](https://www.kaggle.com/c/boston-housing). This project tests your ability to operationalize a Python flask app—in a provided file, `app.py`—that serves out predictions (inference) about housing prices through API calls. This project could be extended to any pre-trained machine learning model, such as those for image recognition and data labeling.
-
-### Project Tasks
-
-Your project goal is to operationalize this working, machine learning microservice using [kubernetes](https://kubernetes.io/), which is an open-source system for automating the management of containerized applications. In this project you will:
-* Test your project code using linting
-* Complete a Dockerfile to containerize this application
-* Deploy your containerized application using Docker and make a prediction
-* Improve the log statements in the source code for this application
-* Configure Kubernetes and create a Kubernetes cluster
-* Deploy a container using Kubernetes and make a prediction
-* Upload a complete Github repo with CircleCI to indicate that your code has been tested
-
-You can find a detailed [project rubric, here](https://review.udacity.com/#!/rubrics/2576/view).
-
-**The final implementation of the project will showcase your abilities to operationalize production microservices.**
+# Operationalizing a Machine Learning Microservice API
 
 ---
 
-## Setup the Environment
+## Overview
 
+The purpose of this project is to apply Devops practises to the operationalization of machine learning models. More specifically we are focused on exposing a machine learning algorithm online through a Flask based web service.
+
+Using a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston. To find out more about the data source used for this project, please check out the following link: [the data source site](https://www.kaggle.com/c/boston-housing). This project goes through the post development work needed to host web apis such as making and linting, building a Docker image and testing it, deploying to Kubernetes, and performing predictions via the web.
+
+---
+
+## 1. Setting up the environment
+
+* Review the `Makefile`
 * Create a virtualenv and activate it
 * Run `make install` to install the necessary dependencies
 
-### Running `app.py`
+## 2. Testing with CircleCI
 
-1. Standalone:  `python app.py`
-2. Run in Docker:  `./run_docker.sh`
-3. Run in Kubernetes:  `./run_kubernetes.sh`
+There are two options for testing with CircleCI, online and local
 
-### Kubernetes Steps
+* For local run `make run-circleci-local`
+* For online, connect the git repository containing this application to your account on CircleCI and build directly on CircleCI. If the tests pass, then the docker image can be built
 
-* Setup and Configure Docker locally
-* Setup and Configure Kubernetes locally
-* Create Flask app in Container
-* Run via kubectl
+## 3. Preparing the Docker image
+
+For an example of this see the `Dockerfile`
+
+* Choose a base image. In our case : python:3.7.3-stretch
+* Setup the copy commands from localhost to docker
+* Setup installations of dependencies
+* Expose port 80
+* Configure startup commands
+
+To build the image, run `sudo docker build <home_folder> -t <docker_tag>`
+
+To run the container, run `sudo docker run -p <port_on_local>:80 <docker_tag>`
+
+See `run_docker.sh`
+
+## 4. Testing the Docker image
+
+* Run `curl` to test the api
+* Check `make_predictions.sh`: edit to match `<port_on_local>`
+* If tests succeed, the image is ready to be uploaded to a container registry, in our case **DockerHub**
+* Upload the docker image to dockerhub using `upload_docker.sh`
+
+    Alternatively, DockerHub can be configured to rebuild the docker image from the github repository after each push.....Cool right?
+
+## 5. Deploying on Kubernetes
+
+Our Kubernetes deployment strategy is based on yaml configuration files which store all the details of our deployment. See the folder `.kubernetes`. Our application is isolated from the rest of Kubernetes using **Namespaces**. See `namespace.yaml`, `service.yaml`, and `deployment.yaml`
+
+Run `run_kubernetes.sh` to download the image, and setup the application on Kubernetes
+
+The last commannd in `run_kubernetes.sh` return a result such as shown below:
+
+| NAME  |  TYPE |  CLUSTER-IP |  EXTERNAL-IP |  PORT(S) |
+|---|---|---|---|---|
+|  boston-house-prices |  NodePort |  10.97.76.57 |  [None] |  8000:31910/TCP |
+
+The endpoint for your application will be **10.97.76.57:31910**
+
+Now we can make predictions from Kubernetes
+
+## 6. Making predictions
+
+* Run `make_prediction_knetes.sh` to make a prediction from the Kubernetes cluster
+
+# Prediction Outputs
+
+* Outputs to running the api on a standalone docker container  can be found at **output_txt_files/docker_out.txt**
+* Outputs to running the api on the Kubernetes cluster can be found at **output_txt_files/kubernetes_out.txt**

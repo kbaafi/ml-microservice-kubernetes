@@ -1,3 +1,5 @@
+# !/usr/bin/env bash
+
 ## The Makefile includes instructions on environment setup and lint tests
 # Create and activate a virtual environment
 # Install dependencies in requirements.txt
@@ -8,8 +10,13 @@
 setup:
 	# Create python virtualenv & source it
 	# source ~/.devops/bin/activate
-	python3 -m venv ~/.mldevops && \
-		source ~/.mldevops/bin/activate
+	python3 -m venv ~/.devops && \
+		source ~/.devops/bin/activate
+
+env:
+	#Show information about environment
+	which python3
+	python3 --version
 
 install:
 	# This should be run from inside a virtualenv
@@ -37,4 +44,4 @@ lint:
 	# This should be run from inside a virtualenv
 	pylint --disable=R,C,W1203 app.py
 
-all: install lint test
+all: setup install lint test

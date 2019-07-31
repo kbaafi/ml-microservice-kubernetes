@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
-# This tags and uploads an image to Docker Hub
+# Docker image
+# dockerpath="kbaafi/boston-houseprices-inference:latest"
 
-# Step 1:
-# This is your Docker ID/path
-# dockerpath=<>
+# Kubernetes manifest for namespace =/.kubernetes/manifest.yaml
+# create namespace
+kubectl create -f .kubernetes/namespace.yaml
 
-# Step 2
-# Run the Docker Hub container with kubernetes
+# Kubernetes deployment manifest =/.kubernetes/deployment.yaml
+kubectl create -f .kubernetes/deployment.yaml
 
+# Kubernetes manifest for service =/.kubernetes/service.yaml
+kubectl create -f .kubernetes/service.yaml
 
-# Step 3:
-# List kubernetes pods
+# List of pods
+kubectl get pods --namespace=boston-house-prices
 
-# Step 4:
-# Forward the container port to a host
+# List of services
+kubectl get svc -n boston-house-prices
 

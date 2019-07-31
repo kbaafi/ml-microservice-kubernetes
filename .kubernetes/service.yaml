@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: boston-house-prices
+  namespace: boston-house-prices
+spec:
+  selector:
+    app: boston-house-prices
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 80
+  type: NodePort

@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy source code to working directory
 COPY requirements.txt /app/requirements.txt
 COPY model_data /app/model_data
-COPY app.py /app./app.py
+COPY app.py /app/app.py
 
 # Install packages from requirements.txt
 # hadolint ignore=DL3013
@@ -17,5 +17,5 @@ RUN pip install --upgrade pip &&\
 EXPOSE 80
 
 # Run app.py at container launch
-CMD [ "python","/app/app.py" ]
+CMD ["python","./app.py"]
 
